@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鬼滅荒島生存挑戰</title>
+    <style>
+        :root { --primary: #1a1a1a; --accent: #e74c3c; --bg: #fdfaf6; }
+        body { margin: 0; height: 100dvh; display: flex; flex-direction: column; font-family: 'PingFang TC', sans-serif; background: var(--bg); }
+        #story-box { flex: 1; overflow-y: auto; padding: 25px; line-height: 2; font-size: 1.25rem; background: white; border-bottom: 3px solid #ddd; color: #333; }
+        .drop-zone { border-bottom: 2px solid red; display: inline-block; min-width: 85px; text-align: center; color: var(--accent); font-weight: bold; cursor: pointer; margin: 0 4px; vertical-align: bottom; line-height: 1.2; min-height: 1.5em; }
+        .drop-zone.correct { color: #27ae60; border-bottom-color: #27ae60; }
+        .drop-zone.wrong { color: #c0392b; text-decoration: line-through; }
+        #ui-container { max-height: 35vh; overflow-y: auto; padding: 12px; background: #f0f0f0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .word-bank { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 12px; }
+        .word-card { background: white; padding: 4px 10px; border-radius: 6px; border: 1px solid #bbb; font-size: 0.95rem; cursor: pointer; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
+        .word-card:hover { background: #eef; }
+        #controls { display: flex; gap: 10px; justify-content: center; padding-bottom: 5px; }
+        button { padding: 10px 24px; font-size: 1rem; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 20px; font-weight: bold; transition: 0.3s; }
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div id="story-box">
+    當殘陽染紅了海面，時近<span class="drop-zone" data-ans="黃昏"></span>，炭治郎與善逸正搭乘一艘隱密的帆船前往南方小島執行任務。善逸因為無法適應海浪的節奏，正躲在避風的<span class="drop-zone" data-ans="船艙"></span>內大聲哀號，他感到嚴重的<span class="drop-zone" data-ans="暈船"></span>，整個人虛弱地縮成一團。炭治郎則在甲板上觀察海象，沒想到任務<span class="drop-zone" data-ans="途中"></span>，原本平靜的海面突然掀起一陣<span class="drop-zone" data-ans="劇烈"></span>的晃動，黑暗中，巨大的海中鬼怪正悄悄逼近。<br><br>
+    伴隨著一聲巨響，船隻不幸撞上了隱藏在海面下的<span class="drop-zone" data-ans="礁岩"></span>，船身瞬間失去了動力而<span class="drop-zone" data-ans="擱淺"></span>在淺灘邊。隨後，猛烈的衝擊導致主桅杆<span class="drop-zone" data-ans="倒塌"></span>，整艘船幾乎毀損。炭治郎趕緊拉著腳軟的善逸跳入海中，拚命游向岸邊。當他們終於踏上沙灘時，海水浸濕了羽織，讓他們感到<span class="drop-zone" data-ans="渾身"></span>冰冷，且體力透支。<br><br>
+    這座神祕島嶼並不安全，森林深處不時傳來恐怖的<span class="drop-zone" data-ans="野獸"></span>叫聲。為了度過寒冷的夜晚，炭治郎展現出在山上修煉的生存本能。他先利用岸邊的碎木搭建了一個簡易的<span class="drop-zone" data-ans="烤爐"></span>來烘烤食物並取暖。接著，為了能在天亮後離開，他提議利用殘餘的木材紮成<span class="drop-zone" data-ans="木筏"></span>，試圖再次出海。看著炭治郎冷靜且專業的指揮，原本膽小的善逸也受到鼓舞，看著眼前的木材竟然露出<span class="drop-zone" data-ans="躍躍欲試"></span>的神情，想要幫忙。
+</div>
+
+<div id="ui-container">
+    <div class="word-bank" id="bank"></div>
+    <div id="controls">
+        <button onclick="checkResults()">檢查任務結果</button>
+        <button onclick="resetGame()" style="background:#666;">重置</button>
+    </div>
+</div>
+
+<script>
+    const words = ["劇烈", "暈船", "黃昏", "船艙", "途中", "野獸", "渾身", "擱淺", "礁岩", "木筏", "倒塌", "烤爐", "躍躍欲試"].sort(() => Math.random() - 0.5);
+    const bank = document.getElementById('bank');
+
+    function init() {
+        bank.innerHTML = words.map(w => `<div class="word-card" onclick="fillWord('${w}')">${w}</div>`).join('');
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.onclick = () => { zone.innerText = ''; zone.className = 'drop-zone'; };
+        });
+    }
+
+    function fillWord(w) {
+        const emptyZone = Array.from(document.querySelectorAll('.drop-zone')).find(z => z.innerText === '');
+        if (emptyZone) emptyZone.innerText = w;
+    }
+
+    function checkResults() {
+        const zones = document.querySelectorAll('.drop-zone');
+        let correctCount = 0;
+        zones.forEach(z => {
+            if (z.innerText.trim() === z.dataset.ans) {
+                z.className = 'drop-zone correct';
+                correctCount++;
+            } else {
+                z.className = 'drop-zone wrong';
+            }
+        });
+        if (correctCount === zones.length) alert("恭喜！所有語詞修煉完成！");
+        else alert("還有一些錯誤，請檢查紅線部分！");
+    }
+
+    function resetGame() { if(confirm("確定要重新開始嗎？")) location.reload(); }
+    init();
+</script>
+</body>
+</html>
